@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import Header from '../../Components/Header';
 import Image from 'next/image';
+import Link from 'next/link'; // Import Link dari Next.js
 
 export default function MerchPage() {
-  // 1. Data Produk
   const allProducts = [
     { id: 1, name: 'LOVE ALWAYS CREWNECK', price: 'Rp 450.000', tags: ['LTD. EDITION', 'NEW'], category: 'BAJU', image: '/images/crewneck-love.png' },
     { id: 2, name: 'GLASS MUGS', price: 'Rp 150.000', tags: ['LTD. EDITION', 'NEW'], category: 'MUG', image: '/images/glass-mug.png' },
@@ -16,11 +16,9 @@ export default function MerchPage() {
     { id: 7, name: 'CLASSIC ROSE CAP', price: 'Rp 150.000', tags: [], category: 'TOPI', image: '/images/cap.png' },
   ];
 
-  // 2. State Management
   const [activeFilter, setActiveFilter] = useState('ALL');
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // 3. Fungsi Slider Logic
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const { clientWidth } = scrollRef.current;
@@ -29,7 +27,6 @@ export default function MerchPage() {
     }
   };
 
-  // 4. Filter Logic
   const newArrivals = allProducts.filter(p => p.tags.includes('NEW'));
   const filteredProducts = activeFilter === 'ALL' 
     ? allProducts 
@@ -39,7 +36,6 @@ export default function MerchPage() {
     <div className="min-h-screen flex flex-col bg-[#FFF8F0]">
       <Header />
 
-      {/* BANNER UTAMA - Dinaikkan (Tanpa Padding Top) agar celah putih tertutup */}
       <section className="w-full">
         <div className="relative w-full h-[400px] md:h-[550px] bg-[#EE215A] overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-[#EE215A] to-[#8B4444] opacity-95"></div>
@@ -54,36 +50,37 @@ export default function MerchPage() {
       </section>
 
       <main className="flex-grow container mx-auto max-w-[1300px] px-6 py-16">
-        
-        {/* SECTION 1: WHAT'S NEW (Slider Horizontal) */}
         <section className="mb-24 relative">
           <div className="flex justify-between items-end mb-10">
-            <div>
-              <h2 className="text-5xl md:text-6xl font-black text-[#333] tracking-tighter uppercase leading-none">What's <br /> New</h2>
-              <p className="text-[#A85858] mt-2 italic">Koleksi terbaru bulan ini</p>
+            <div className="flex items-start gap-2">
+              <div className="relative">
+                <h2 className="text-5xl md:text-6xl font-black text-[#333] tracking-tighter uppercase leading-none">
+                  What's <br /> New
+                </h2>
+                <p className="text-[#A85858] mt-2 italic">Koleksi terbaru bulan ini</p>
+              </div>
+
+              <div className="valentine-sticker-gold group mt-[-10px]">
+                <div className="sticker-inner">
+                  <div className="sticker-content">
+                    <span className="text-[9px] font-bold tracking-tighter">VALENTINE</span>
+                    <span className="text-[11px] font-black">EDITION</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Tombol Navigasi Slider - Putih ke Hitam saat Hover */}
             <div className="flex gap-3 mb-2">
-              <button 
-                onClick={() => scroll('left')}
-                className="w-12 h-12 rounded-full border border-gray-200 bg-white text-gray-400 flex items-center justify-center transition-all duration-300 active:scale-90 hover:bg-black hover:text-white hover:border-black shadow-sm"
-              >
+              <button onClick={() => scroll('left')} className="w-12 h-12 rounded-full border border-gray-200 bg-white text-gray-400 flex items-center justify-center transition-all duration-300 hover:bg-black hover:text-white shadow-sm">
                 <span className="text-xl font-light">{"<"}</span>
               </button>
-              <button 
-                onClick={() => scroll('right')}
-                className="w-12 h-12 rounded-full border border-gray-200 bg-white text-gray-400 flex items-center justify-center transition-all duration-300 active:scale-90 hover:bg-black hover:text-white hover:border-black shadow-sm"
-              >
+              <button onClick={() => scroll('right')} className="w-12 h-12 rounded-full border border-gray-200 bg-white text-gray-400 flex items-center justify-center transition-all duration-300 hover:bg-black hover:text-white shadow-sm">
                 <span className="text-xl font-light">{">"}</span>
               </button>
             </div>
           </div>
           
-          <div 
-            ref={scrollRef}
-            className="flex flex-nowrap overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-8 pb-4"
-          >
+          <div ref={scrollRef} className="flex flex-nowrap overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-8 pb-4">
             {newArrivals.map((item) => (
                <div key={item.id} className="snap-start flex-shrink-0">
                  <ProductCard item={item} />
@@ -92,27 +89,21 @@ export default function MerchPage() {
           </div>
         </section>
 
-        {/* SECTION 2: ALL MERCH (Grid + Filter) */}
         <section id="all-merch">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 border-t pt-16 border-[#8B4444]/10">
             <h2 className="text-5xl md:text-6xl font-black text-[#333] tracking-tighter uppercase leading-none">All <br /> Merch</h2>
-
-            {/* Tombol Filter Kategori */}
             <div className="flex flex-wrap gap-2 bg-[#E6D7C0]/30 p-2 rounded-2xl">
               {['ALL', 'BAJU', 'TOPI', 'MUG', 'AKSESORI'].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveFilter(cat)}
-                  className={`px-5 py-2 rounded-xl text-xs font-bold transition-all ${
-                    activeFilter === cat ? 'bg-[#8B4444] text-white shadow-md' : 'text-[#8B4444] hover:bg-[#E6D7C0]'
-                  }`}
+                  className={`px-5 py-2 rounded-xl text-xs font-bold transition-all ${activeFilter === cat ? 'bg-[#8B4444] text-white shadow-md' : 'text-[#8B4444] hover:bg-[#E6D7C0]'}`}
                 >
                   {cat}
                 </button>
               ))}
             </div>
           </div>
-
           <div className="flex flex-wrap justify-center md:justify-start gap-8">
             {filteredProducts.map((item) => (
                <ProductCard key={item.id} item={item} />
@@ -125,37 +116,46 @@ export default function MerchPage() {
         <p className="font-black text-[#8B4444] uppercase tracking-widest">Rosé Crumbs Merch</p>
       </footer>
 
-      {/* Sembunyikan Scrollbar secara Global */}
       <style jsx global>{`
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .valentine-sticker-gold {
+          width: 75px; height: 75px; background: #F2E5C6; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+          transition: transform 0.5s; cursor: pointer;
+        }
+        .sticker-inner {
+          width: 62px; height: 62px; background: #722F37; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .valentine-sticker-gold:hover { transform: rotate(12deg) scale(1.1); }
+        .sticker-content {
+          display: flex; flex-direction: column; line-height: 1.1;
+          color: #F2E5C6; text-align: center; transform: rotate(-5deg);
+        }
       `}</style>
     </div>
   );
 }
 
-// Komponen Card Terpisah
 function ProductCard({ item }: any) {
   return (
-    <div className="w-[260px] p-5 rounded-[20px] bg-white shadow-sm group transition-all duration-300 hover:translate-y-[-10px] hover:shadow-xl">
-      <div className="relative aspect-square bg-[#F5E6D3] rounded-xl overflow-hidden mb-6">
-        {/* Label NEW / LTD EDITION */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
-          {item.tags.map((tag: string) => (
-            <span key={tag} className="bg-black text-white text-[8px] font-bold px-2 py-1 rounded uppercase tracking-widest">{tag}</span>
-          ))}
+    <Link href={`/Merch/DetailMerch?id=${item.id}`}>
+      <div className="w-[260px] p-5 rounded-[20px] bg-white shadow-sm group transition-all duration-300 hover:translate-y-[-10px] hover:shadow-xl cursor-pointer">
+        <div className="relative aspect-square bg-[#F5E6D3] rounded-xl overflow-hidden mb-6">
+          <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+            {item.tags.map((tag: string) => (
+              <span key={tag} className="bg-black text-white text-[8px] font-bold px-2 py-1 rounded uppercase tracking-widest">{tag}</span>
+            ))}
+          </div>
+          <Image src={item.image} alt={item.name} fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
         </div>
-        <Image 
-          src={item.image} 
-          alt={item.name} 
-          fill 
-          className="object-cover transition-transform duration-500 group-hover:scale-110" 
-        />
+        <div className="text-center">
+          <h3 className="font-black text-xs text-[#333] uppercase mb-1 leading-tight min-h-[32px]">{item.name}</h3>
+          <p className="text-lg font-bold text-[#555]">{item.price}</p>
+        </div>
       </div>
-      <div className="text-center">
-        <h3 className="font-black text-xs text-[#333] uppercase mb-1 leading-tight min-h-[32px]">{item.name}</h3>
-        <p className="text-lg font-bold text-[#555]">{item.price}</p>
-      </div>
-    </div>
+    </Link>
   );
 }
