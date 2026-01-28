@@ -18,19 +18,9 @@ export default function MerchPage() {
 
   // 2. State Management
   const [activeFilter, setActiveFilter] = useState('ALL');
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // 3. Fungsi Slider Logic
-  const checkScroll = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setCanScrollLeft(scrollLeft > 5);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
-    }
-  };
-
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const { clientWidth } = scrollRef.current;
@@ -38,12 +28,6 @@ export default function MerchPage() {
       scrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
     }
   };
-
-  useEffect(() => {
-    checkScroll();
-    window.addEventListener('resize', checkScroll);
-    return () => window.removeEventListener('resize', checkScroll);
-  }, []);
 
   // 4. Filter Logic
   const newArrivals = allProducts.filter(p => p.tags.includes('NEW'));
@@ -55,8 +39,8 @@ export default function MerchPage() {
     <div className="min-h-screen flex flex-col bg-[#FFF8F0]">
       <Header />
 
-      {/* BANNER UTAMA (Full Width, No Rounded) */}
-      <section className="w-full pt-20">
+      {/* BANNER UTAMA - Dinaikkan (Tanpa Padding Top) agar celah putih tertutup */}
+      <section className="w-full">
         <div className="relative w-full h-[400px] md:h-[550px] bg-[#EE215A] overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-[#EE215A] to-[#8B4444] opacity-95"></div>
           <div className="relative h-full flex flex-col items-center justify-center text-center px-6 z-10 text-white">
@@ -79,30 +63,25 @@ export default function MerchPage() {
               <p className="text-[#A85858] mt-2 italic">Koleksi terbaru bulan ini</p>
             </div>
 
-            {/* Tombol Navigasi Slider */}
+            {/* Tombol Navigasi Slider - Putih ke Hitam saat Hover */}
             <div className="flex gap-3 mb-2">
               <button 
                 onClick={() => scroll('left')}
-                className={`w-12 h-12 rounded-full border transition-all duration-300 flex items-center justify-center active:scale-90
-                  ${canScrollLeft ? 'bg-black text-white border-black' : 'bg-white text-gray-300 border-gray-200'}
-                  hover:bg-black hover:text-white hover:border-black`}
+                className="w-12 h-12 rounded-full border border-gray-200 bg-white text-gray-400 flex items-center justify-center transition-all duration-300 active:scale-90 hover:bg-black hover:text-white hover:border-black shadow-sm"
               >
-                <span className="text-xl">{"<"}</span>
+                <span className="text-xl font-light">{"<"}</span>
               </button>
               <button 
                 onClick={() => scroll('right')}
-                className={`w-12 h-12 rounded-full border transition-all duration-300 flex items-center justify-center active:scale-90
-                  ${canScrollRight ? 'bg-black text-white border-black' : 'bg-white text-gray-300 border-gray-200'}
-                  hover:bg-black hover:text-white hover:border-black`}
+                className="w-12 h-12 rounded-full border border-gray-200 bg-white text-gray-400 flex items-center justify-center transition-all duration-300 active:scale-90 hover:bg-black hover:text-white hover:border-black shadow-sm"
               >
-                <span className="text-xl">{">"}</span>
+                <span className="text-xl font-light">{">"}</span>
               </button>
             </div>
           </div>
           
           <div 
             ref={scrollRef}
-            onScroll={checkScroll}
             className="flex flex-nowrap overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-8 pb-4"
           >
             {newArrivals.map((item) => (
@@ -118,6 +97,7 @@ export default function MerchPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 border-t pt-16 border-[#8B4444]/10">
             <h2 className="text-5xl md:text-6xl font-black text-[#333] tracking-tighter uppercase leading-none">All <br /> Merch</h2>
 
+            {/* Tombol Filter Kategori */}
             <div className="flex flex-wrap gap-2 bg-[#E6D7C0]/30 p-2 rounded-2xl">
               {['ALL', 'BAJU', 'TOPI', 'MUG', 'AKSESORI'].map((cat) => (
                 <button
@@ -145,6 +125,7 @@ export default function MerchPage() {
         <p className="font-black text-[#8B4444] uppercase tracking-widest">Rosé Crumbs Merch</p>
       </footer>
 
+      {/* Sembunyikan Scrollbar secara Global */}
       <style jsx global>{`
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
@@ -158,12 +139,18 @@ function ProductCard({ item }: any) {
   return (
     <div className="w-[260px] p-5 rounded-[20px] bg-white shadow-sm group transition-all duration-300 hover:translate-y-[-10px] hover:shadow-xl">
       <div className="relative aspect-square bg-[#F5E6D3] rounded-xl overflow-hidden mb-6">
+        {/* Label NEW / LTD EDITION */}
         <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
           {item.tags.map((tag: string) => (
             <span key={tag} className="bg-black text-white text-[8px] font-bold px-2 py-1 rounded uppercase tracking-widest">{tag}</span>
           ))}
         </div>
-        <Image src={item.image} alt={item.name} fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+        <Image 
+          src={item.image} 
+          alt={item.name} 
+          fill 
+          className="object-cover transition-transform duration-500 group-hover:scale-110" 
+        />
       </div>
       <div className="text-center">
         <h3 className="font-black text-xs text-[#333] uppercase mb-1 leading-tight min-h-[32px]">{item.name}</h3>
